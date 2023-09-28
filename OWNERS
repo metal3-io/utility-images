@@ -1,0 +1,15 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+approvers:
+ - Rozzi
+ - lentzi90
+
+reviewers:
+ - mboukhalfa
+ - kashifest
+ - dtantsur
+ - elfosardo
+
+emeritus_reviewers:
+
+emeritus_approvers:

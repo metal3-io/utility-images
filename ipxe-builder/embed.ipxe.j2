@@ -1,0 +1,14 @@
+#!ipxe
+
+:chainload
+echo Initiating DHCP based interface configuration
+dhcp
+echo Start chainloading https://{{ env.IPXE_CHAIN_HOST }}:{{ env.IPXE_TLS_PORT }}/boot.ipxe
+chain https://{{ env.IPXE_CHAIN_HOST }}:{{ env.IPXE_TLS_PORT }}/boot.ipxe || goto boot_failed
+echo Chainloading succeeded!
+
+:boot_failed
+echo Chainloading failed!
+echo Press any key to reboot...
+prompt --timeout 60
+reboot
