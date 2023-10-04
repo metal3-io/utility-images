@@ -1,4 +1,4 @@
-# Metal3 utilty images
+# Metal3 utility images
 
 This repository contains source code for the following container images.
 
