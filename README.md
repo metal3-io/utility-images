@@ -9,12 +9,9 @@ This repository provides the ability to build an OCI container that:
 - Provides customizable custom IPXE firmware building functionality.
 
 - Ability to either build IPXE firmware from an already existing cash.
-
 - Ability to pull IPXE firmware source code and build the firmware based
   on that.
-
 - Embed custom IPXE script in the firmware.
-
 - Enable IPV6 or TLS 1.3 support for the firmware.
 
 ### External runtime dependencies
@@ -22,10 +19,8 @@ This repository provides the ability to build an OCI container that:
 - In order to build the iPXE firmware with TLS support, the user needs to
   provide relevant certificate and certificate key files e.g. via a mounted
   volume.
-
 - If the ipxe-builder is instructed to build from existing iPXE source code
   cache, then the cahce has to be provided e.g. via a mounted volume.
-
 - In order to get a usable output the user needs to mount a directory
   where the iPXE builder script can put the build outputs.
 
