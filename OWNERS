@@ -1,15 +1,11 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
 approvers:
- - lentzi90
- - Rozzii
+- utility-images-maintainers
 
 reviewers:
- - dtantsur
- - elfosardo
- - kashifest
- - mboukhalfa
- - tuminoid
+- utility-images-maintainers
+- utility-images-reviewers
 
 emeritus_reviewers:
 
