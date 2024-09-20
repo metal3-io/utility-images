@@ -30,20 +30,21 @@ def inspect(system, inspection_callback_url, verify, cert, logger):
                     "lldp": None,
                     "product": "0x0001",
                     "vendor": "0x1af4",
-                    "name": "eth1",
+                    "name": nic.get("name", f"enp{i+1}s0"),
                     "has_carrier": True,
-                    "ipv4_address": system.get("nics")[0]["ip"] or None,
+                    "ipv4_address": nic.get("ip"),
                     "client_id": None,
-                    "mac_address": system.get("nics")[0]["mac"],
+                    "mac_address": nic.get("mac"),
                 }
-                ],
+                for i, nic in enumerate(system.get("nics"))
+            ],
             "cpu": {
                 "count": 2,
                 "frequency": "2100.084",
                 "flags": ["fpu", "mmx", "fxsr", "sse", "sse2"],
                 "architecture": "x86_64",
-                },
             },
+        },
     }
 
     @tenacity.retry(
