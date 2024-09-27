@@ -4,7 +4,7 @@ This repository contains source code for the following container images.
 
 ## iPXE builder image
 
-This repository provides the ability to build an OCI container that:
+This directory provides the ability to build an OCI container that:
 
 - Provides customizable custom IPXE firmware building functionality.
 
@@ -60,3 +60,17 @@ functionality:
 - `IPXE_CHAIN_HOST` this ip will be used to start chainloading by a TLS enabled
   iPXE firmware, this value is used to render the embed.ipxe.j2 script template
   (default: `0.0.0.0`)
+
+## Fake Ironic Python Agent
+
+FakeIPA is a tool to help test ironic scalability.
+
+FakeIPA simulate the IPA by:
+
+- Running an API server with the needed real IPA endpoint.
+- Send back fake inspection data when requested.
+- Lookup the node and save tokens.
+- Heartbeating to Ironic API with several threads looping over
+  a queue of fake agents.
+- Faking the sync/async commands needed by ironic to inspect,
+  clean and provision a node.
