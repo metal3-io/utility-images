@@ -97,7 +97,7 @@ class Heatbeater:
                 advertise_address=Host(
                     hostname=self._config['FAKE_IPA_ADVERTISE_ADDRESS_IP'],
                     port=self._config['FAKE_IPA_ADVERTISE_ADDRESS_PORT']),
-                advertise_protocol="http",
+                advertise_protocol="https",
                 generated_cert=None,
             )
             self._logger.info('heartbeat successful')
