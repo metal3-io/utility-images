@@ -292,7 +292,14 @@ def main():
         'FAKE_IPA_ADVERTISE_ADDRESS_IP: %s',
         app.config.get('FAKE_IPA_ADVERTISE_ADDRESS_IP')
         )
-    app.run(host=app.config.get('SUSHY_FAKE_IPA_LISTEN_IP', '0.0.0.0'),
+    cert = app.config.get("FAKE_IPA_CERTFILE")
+    key = app.config.get("FAKE_IPA_KEYFILE")
+    if  cert is not None and key is not None:
+        ssl = (cert, key)
+    else:
+        ssl = None
+    app.run(ssl_context=ssl,
+            host=app.config.get('SUSHY_FAKE_IPA_LISTEN_IP', '0.0.0.0'),
             port=app.config.get('SUSHY_FAKE_IPA_LISTEN_PORT', DEFAULT_PORT),
             debug=True)
 

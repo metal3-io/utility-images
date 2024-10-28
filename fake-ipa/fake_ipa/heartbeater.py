@@ -91,13 +91,20 @@ class Heatbeater:
 
     def do_heartbeat(self, system, agent):
         """Send a heartbeat to Ironic."""
+
+        # if tls enabled with fakeIPA use HTTPS else HTTP
+        adv_protocol="http"
+        cert = self._config.get("FAKE_IPA_CERTFILE")
+        key = self._config.get("FAKE_IPA_KEYFILE")
+        if cert is not None and key is not None :
+            adv_protocol="https"
         try:
             agent.api_client.heartbeat(
                 uuid=agent.node['uuid'],
                 advertise_address=Host(
                     hostname=self._config['FAKE_IPA_ADVERTISE_ADDRESS_IP'],
                     port=self._config['FAKE_IPA_ADVERTISE_ADDRESS_PORT']),
-                advertise_protocol="https",
+                advertise_protocol=adv_protocol,
                 generated_cert=None,
             )
             self._logger.info('heartbeat successful')
