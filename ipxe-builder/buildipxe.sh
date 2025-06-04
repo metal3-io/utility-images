@@ -21,7 +21,7 @@ export IPXE_KEY_FILE="${IPXE_KEY_FILE:-/certs/ipxe/tls.key}"
 export IPXE_TLS_PORT="${IPXE_TLS_PORT:-8084}"
 export IPXE_CHAIN_HOST="${IPXE_CHAIN_HOST:-0.0.0.0}"
 # IPXE_BUILD_OPTIONS are not configurable directly
-export IPXE_BUILD_OPTIONS="NO_WERROR=1 EMBED=${IPXE_EMBED_SCRIPT}"
+export IPXE_BUILD_OPTIONS="NO_WERROR=1"
 # PREPARE SOURCE #
 
 render_j2_config(){
@@ -83,7 +83,7 @@ if [[ "${IPXE_ENABLE_TLS}" == "true" ]]; then
         "config/general.h"
     echo "IPXE BUILD OPTIONS ARE EXTENDED WITH CERTS!!!"
     render_j2_config "${IPXE_EMBED_SCRIPT_TEMPLATE}" "${IPXE_EMBED_SCRIPT}"
-    export IPXE_BUILD_OPTIONS="${IPXE_BUILD_OPTIONS} CERT=${IPXE_CERT_FILE} TRUST=${IPXE_CERT_FILE}"
+    export IPXE_BUILD_OPTIONS="${IPXE_BUILD_OPTIONS} EMBED=${IPXE_EMBED_SCRIPT} CERT=${IPXE_CERT_FILE} TRUST=${IPXE_CERT_FILE}"
 fi
 
 sed -i 's/^\/\/#define[ \t]CONSOLE_SERIAL/#define\tCONSOLE_SERIAL/g' \
