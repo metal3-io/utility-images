@@ -3,3 +3,5 @@ FAKE_IPA_INSPECTION_CALLBACK_URL = "https://172.22.0.2:6385/v1/continue_inspecti
 FAKE_IPA_ADVERTISE_ADDRESS_IP = "192.168.111.1"
 FAKE_IPA_INSECURE = False
 FAKE_IPA_CAFILE = "/root/cert/ironic-ca.crt"
+FAKE_IPA_CERTFILE = "/root/sushy/cert.pem"
+FAKE_IPA_KEYFILE = "/root/sushy/key.pem"
