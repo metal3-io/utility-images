@@ -21,6 +21,7 @@ jobs:
       pushImage: true
       dockerfile-directory: ipxe-builder
       generate-sbom: true
+      sign-image: true
     secrets:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
@@ -37,6 +38,7 @@ jobs:
       pushImage: true
       dockerfile-directory: fake-ipa
       generate-sbom: true
+      sign-image: true
     secrets:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
@@ -53,6 +55,7 @@ jobs:
       dockerfile-directory: keepalived
       pushImage: true
       generate-sbom: true
+      sign-image: true
     secrets:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
