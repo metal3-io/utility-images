@@ -60,3 +60,17 @@ jobs:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  build_cloud-init-tool:
+    name: Build cloud-init-tool container image
+    if: github.repository == 'metal3-io/utility-images'
+    uses: metal3-io/project-infra/.github/workflows/container-image-build.yml@main
+    with:
+      image-name: 'cloud-init-tool'
+      dockerfile-directory: cloud-init-tool
+      pushImage: true
+      generate-sbom: true
+      sign-image: true
+    secrets:
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
