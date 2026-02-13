@@ -90,11 +90,39 @@ created under this path then the config files will be moved to the subdirectory
 and the variable substitution will happen in this subdirectory
 - `CUSTOM_DATA_DIR` - subdirectory (named keepalived) will be created here to
 hold the keepalived and vrrp pid files
-- `PROVISIONING_IP` - the fixed IP provided by keepalived
+- `PROVISIONING_IP` - the fixed IP provided by keepalived (legacy mode, see
+  below)
 - `PROVISIONING_INTERFACE` - The name of the interface that will be used
-  to "host" the fixed IP (keepalived is used in a pod that is attached to
-  host network, thus the interface names are the same as the interface names
-  on the host)
+  to "host" the fixed IP (legacy mode, see below)
+- `KEEPALIVED_VIRTUAL_IPS` - Space-separated list of virtual IPs with their
+  interfaces. Each entry has format: `ip,interface[,prefix]`. When set, this
+  takes precedence over `PROVISIONING_IP` and `PROVISIONING_INTERFACE`.
+
+### Configuration Modes
+
+**Legacy mode** (single IP): Use `PROVISIONING_IP` and `PROVISIONING_INTERFACE`
+for simple single-IP deployments. The script automatically detects IPv4 vs IPv6
+and applies the correct prefix (`/32` for IPv4, `/128` for IPv6).
+
+```bash
+PROVISIONING_IP=192.168.0.100
+PROVISIONING_INTERFACE=eth0
+```
+
+**Multi-IP mode**: Use `KEEPALIVED_VIRTUAL_IPS` for multiple IPs, different
+interfaces, or mixed IPv4/IPv6 deployments. Format is space-separated entries
+where each entry is `ip,interface[,prefix]`.
+
+```bash
+# Two IPs on different interfaces
+KEEPALIVED_VIRTUAL_IPS="192.168.0.100,eth0 192.168.1.50,eth1"
+
+# IPv6 with link-local address
+KEEPALIVED_VIRTUAL_IPS="fe80::1,eth0,64 fd00::100,eth0,128"
+
+# Mixed IPv4 and IPv6
+KEEPALIVED_VIRTUAL_IPS="192.168.0.100,eth0 fd00::100,eth0"
+```
 
 NOTE: If run with container that has read-only root file-system, then
 `CUSTOM_CONF_DIR`, `CUSTOM_DATA_DIR` and `/var/log` paths have to mounted from
