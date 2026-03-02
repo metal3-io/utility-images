@@ -63,6 +63,9 @@ jobs:
   build_cloud-init-tool:
     name: Build cloud-init-tool container image
     if: github.repository == 'metal3-io/utility-images'
+    permissions:
+      contents: read
+      id-token: write
     uses: metal3-io/project-infra/.github/workflows/container-image-build.yml@main
     with:
       image-name: 'cloud-init-tool'
