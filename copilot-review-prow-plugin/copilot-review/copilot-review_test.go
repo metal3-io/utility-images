@@ -24,6 +24,8 @@ func TestCopilotReviewRegex(t *testing.T) {
 		{"/Copilot-Review", true},
 		{"/copilot-review\n/approve", true},
 		{"", false},
+		{"> /copilot-review", false},
+		{"> context from previous comment\n/copilot-review", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {

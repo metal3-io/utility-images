@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -127,13 +126,7 @@ func requestCopilotReview(org, repo string, prNumber int) error {
 	cmd := exec.CommandContext(ctx, "gh", "pr", "edit", strconv.Itoa(prNumber),
 		"--repo", fmt.Sprintf("%s/%s", org, repo),
 		"--add-reviewer", "@copilot")
-	env := make([]string, 0, len(os.Environ()))
-	for _, e := range os.Environ() {
-		if !strings.HasPrefix(e, "GH_TOKEN=") && !strings.HasPrefix(e, "GITHUB_TOKEN=") {
-			env = append(env, e)
-		}
-	}
-	cmd.Env = append(env, "GH_TOKEN="+token)
+	cmd.Env = []string{"GH_TOKEN=" + token}
 	output, err := cmd.CombinedOutput()
 	if ctx.Err() == context.DeadlineExceeded {
 		return fmt.Errorf("gh pr edit timed out after 30s")

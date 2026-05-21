@@ -77,3 +77,20 @@ jobs:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  build_copilot-review-prow-plugin:
+    name: build copilot-review-prow-plugin image
+    if: github.repository == 'metal3-io/utility-images'
+    permissions:
+      contents: read
+      id-token: write
+    uses: metal3-io/project-infra/.github/workflows/container-image-build.yml@main # zizmor: ignore[unpinned-uses]
+    with:
+      image-name: 'copilot-review-prow-plugin'
+      pushImage: true
+      dockerfile-directory: copilot-review-prow-plugin
+      generate-sbom: true
+      sign-image: true
+    secrets:
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
