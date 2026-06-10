@@ -105,6 +105,8 @@ jobs:
       image-name: 'ipxe-binaries'
       pushImage: true
       dockerfile-directory: ipxe-binaries
+      multiPlatform: true
+      platform: "linux/amd64,linux/arm64"
       generate-sbom: true
       sign-image: true
     secrets:
