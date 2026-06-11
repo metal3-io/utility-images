@@ -2,11 +2,11 @@
 
 aliases:
   utility-images-maintainers:
-  - lentzi90
-  - Rozzii
-
-  utility-images-reviewers:
   - dtantsur
   - elfosardo
-  - kashifest
+  - lentzi90
+  - Rozzii
   - tuminoid
+
+  utility-images-reviewers:
+  - kashifest
