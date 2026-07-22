@@ -1,10 +1,9 @@
 ARG BASE_IMAGE=quay.io/centos/centos:stream9-minimal
 FROM $BASE_IMAGE AS ipxe-builder
 
-## Build iPXE w/ IPv6 Support
-## Note: we are pinning to a specific commit for reproducible builds.
+## Note: we are pinning to a specific commit/tag for reproducible builds.
 ## Updated as needed.
-ARG IPXE_COMMIT_HASH=d0ea2b1bb8f78b219f74424d435b92ff8aa0ea8d
+ARG IPXE_COMMIT_HASH=12798ec29aa8a64d8675c4378b99f5fe28447afb # v2.0.0
 ARG TARGETARCH
 
 WORKDIR /tmp
