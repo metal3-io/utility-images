@@ -64,8 +64,74 @@ else
     assignedIP=$(format_ip_with_prefix "${PROVISIONING_IP}")
 fi
 
+vrid="${KEEPALIVED_VRID:-1}"
+if [[ ! "${vrid}" =~ ^[0-9]+$ ]] || (( 10#${vrid} < 1 || 10#${vrid} > 255 )); then
+    echo "ERROR: KEEPALIVED_VRID must be an integer in the range 1..255," \
+         "got '${vrid}'" >&2
+    exit 1
+fi
+
+# Tracing is disabled from here on so that the password never reaches the
+# `set -x` output. VRRP truncates auth_pass to 8 bytes, only those are compared.
+set +x
+auth_pass=""
+if [[ -n "${KEEPALIVED_AUTH_PASS:-}" && -n "${KEEPALIVED_AUTH_PASS_FILE:-}" ]]; then
+    echo "ERROR: KEEPALIVED_AUTH_PASS and KEEPALIVED_AUTH_PASS_FILE are" \
+         "mutually exclusive, set only one of them" >&2
+    exit 1
+elif [[ -n "${KEEPALIVED_AUTH_PASS:-}" ]]; then
+    auth_pass="${KEEPALIVED_AUTH_PASS}"
+elif [[ -n "${KEEPALIVED_AUTH_PASS_FILE:-}" ]]; then
+    if [[ ! -r "${KEEPALIVED_AUTH_PASS_FILE}" ]]; then
+        echo "ERROR: KEEPALIVED_AUTH_PASS_FILE" \
+             "'${KEEPALIVED_AUTH_PASS_FILE}' does not exist or is not" \
+             "readable" >&2
+        exit 1
+    fi
+    auth_pass="$(cat -- "${KEEPALIVED_AUTH_PASS_FILE}")"
+    auth_pass="${auth_pass#"${auth_pass%%[![:space:]]*}"}"
+    auth_pass="${auth_pass%"${auth_pass##*[![:space:]]}"}"
+    if [[ -z "${auth_pass}" ]]; then
+        echo "ERROR: KEEPALIVED_AUTH_PASS_FILE" \
+             "'${KEEPALIVED_AUTH_PASS_FILE}' is empty" >&2
+        exit 1
+    fi
+fi
+
+if [[ -n "${auth_pass}" ]]; then
+    if [[ "${auth_pass}" == *[[:space:]]* ]] \
+        || [[ "${auth_pass}" == *['"\~']* ]] \
+        || [[ "${auth_pass}" =~ [^[:print:]] ]]; then
+        echo "ERROR: the VRRP authentication password must not contain" \
+             "whitespace, double quotes, backslashes, '~' or non-printable" \
+             "characters" >&2
+        exit 1
+    fi
+    if (( ${#auth_pass} > 8 )); then
+        echo "WARNING: the VRRP authentication password is" \
+             "${#auth_pass} characters long; VRRP truncates it to 8 bytes," \
+             "only the first 8 are significant" >&2
+    fi
+    authentication="authentication {
+        auth_type PASS
+        auth_pass ${auth_pass//&/\\&}
+    }"
+    # Escape newlines for sed replacement: replace newline with backslash-newline
+    auth_expr="s~AUTHENTICATION~${authentication//$'\n'/\\
+}~"
+else
+    auth_expr='/AUTHENTICATION/d'
+fi
+unset auth_pass authentication KEEPALIVED_AUTH_PASS
+set -x
+
 sed -i "s~INTERFACE~${interface}~g" "${KEEPALIVED_CONF}"
 sed -i "s~CHANGEIP~${assignedIP}~g" "${KEEPALIVED_CONF}"
+sed -i "s~VRID~${vrid}~g" "${KEEPALIVED_CONF}"
+set +x
+sed -i "${auth_expr}" "${KEEPALIVED_CONF}"
+unset auth_expr
+set -x
 
 exec /usr/sbin/keepalived --dont-fork --log-console \
     --pid="${KEEPALIVED_DATA_DIR}/keepalived.pid" \

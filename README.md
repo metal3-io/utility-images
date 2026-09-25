@@ -97,6 +97,16 @@ hold the keepalived and vrrp pid files
 - `KEEPALIVED_VIRTUAL_IPS` - Space-separated list of virtual IPs with their
   interfaces. Each entry has format: `ip,interface[,prefix]`. When set, this
   takes precedence over `PROVISIONING_IP` and `PROVISIONING_INTERFACE`.
+- `KEEPALIVED_VRID` - VRRP virtual router ID, an integer in the range 1..255
+  (default `1`)
+- `KEEPALIVED_AUTH_PASS` - VRRP simple authentication password, given inline
+- `KEEPALIVED_AUTH_PASS_FILE` - path to a file holding the VRRP authentication
+  password, typically a mounted Secret. Mutually exclusive with
+  `KEEPALIVED_AUTH_PASS`
+
+`KEEPALIVED_VRID` and the authentication password must match on all peers of
+the same VRRP group. See [keepalived/README.md](keepalived/README.md) for the
+full description of these options.
 
 ### Configuration Modes
 
