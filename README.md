@@ -47,7 +47,8 @@ functionality:
 - `IPXE_RELEASE_BRANCH` the iPXE source code should be pulled from this branch
   , only relevant when `IPXE_BUILD_FROM_REPO` is `true` (default `v1.21.1`)
 - `IPXE_ENABLE_IPV6` build the iPXE firmware with IPV6 support enabled `false`
-- `IPXE_ENABLE_HTTPS` build the iPXE firmware with TLS support enabled `false`
+- `IPXE_TLS_SETUP` build the iPXE firmware with TLS support enabled `false`
+  (variable name comes from ironic-image conventions)
 - `IPXE_CUSTOM_FIRMWARE_DIR` output location for the build process
   (default: `/shared/custom_ipxe_firmware`)
 - `IPXE_CERT_FILE` expected location of the TLS certificate used during build
