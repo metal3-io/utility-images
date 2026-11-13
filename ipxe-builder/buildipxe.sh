@@ -13,13 +13,17 @@ export IPXE_BUILD_FROM_REPO="${IPXE_BUILD_FROM_REPO:-false}"
 export IPXE_SHARED_FIRMWARE_SOURCE="${IPXE_SHARED_FIRMWARE_SOURCE:-/shared/ipxe-source}"
 export IPXE_EMBED_SCRIPT="${IPXE_EMBED_SCRIPT:-/bin/embed.ipxe}"
 export IPXE_EMBED_SCRIPT_TEMPLATE="${IPXE_EMBED_SCRIPT_TEMPLATE:-/bin/embed.ipxe.j2}"
-export IPXE_RELEASE_BRANCH="${IPXE_RELEASE_BRANCH:-v1.21.1}"
+export IPXE_RELEASE_BRANCH="${IPXE_RELEASE_BRANCH:-9261ebe38af0c0b38ac332adeec125a518845013}"
 export IPXE_ENABLE_IPV6="${IPXE_ENABLE_IPV6:-false}"
-export IPXE_ENABLE_HTTPS="${IPXE_ENABLE_TLS:-false}"
+export IPXE_ENABLE_TLS="${IPXE_ENABLE_TLS:-${IPXE_TLS_SETUP:-false}}"
 export IPXE_CERT_FILE="${IPXE_CERT_FILE:-/certs/ipxe/tls.crt}"
 export IPXE_KEY_FILE="${IPXE_KEY_FILE:-/certs/ipxe/tls.key}"
 export IPXE_TLS_PORT="${IPXE_TLS_PORT:-8084}"
 export IPXE_CHAIN_HOST="${IPXE_CHAIN_HOST:-0.0.0.0}"
+# Override the maximum TLS version negotiated by the firmware. Must be an iPXE
+# TLS_VERSION_XXX constant (e.g. TLS_VERSION_TLS_1_2).
+# Leave empty to keep the iPXE source default (TLS 1.3).
+export IPXE_TLS_VERSION_MAX="${IPXE_TLS_VERSION_MAX:-}"
 # IPXE_BUILD_OPTIONS are not configurable directly
 export IPXE_BUILD_OPTIONS="NO_WERROR=1"
 # PREPARE SOURCE #
@@ -44,9 +48,9 @@ if [[ "${IPXE_BUILD_FROM_CACHE}" == "true" ]]; then
 # Requires Internet access!
 elif [[ "${IPXE_BUILD_FROM_CACHE}" != "true" ]] \
          && [[ "${IPXE_BUILD_FROM_REPO}" == "true" ]]; then
-    git clone --depth 1 --branch "${IPXE_RELEASE_BRANCH}" \
-        "https://github.com/ipxe/ipxe.git" \
-        "/tmp/ipxe-source"
+    git clone --depth 1 "https://github.com/ipxe/ipxe.git" "/tmp/ipxe-source"
+    git -C "/tmp/ipxe-source" fetch --depth 1 origin "${IPXE_RELEASE_BRANCH}"
+    git -C "/tmp/ipxe-source" checkout -q FETCH_HEAD
 # In case neither cache nor git repo based ipxe building is initiated,
 # the script will fail with an error message!
 elif [[ "${IPXE_BUILD_FROM_CACHE}" != "true" ]] \
@@ -82,6 +86,11 @@ if [[ "${IPXE_ENABLE_TLS}" == "true" ]]; then
     sed -i 's/^#undef[ \t]DOWNLOAD_PROTO_HTTPS/#define\tDOWNLOAD_PROTO_HTTPS/g' \
         "config/general.h"
     echo "IPXE BUILD OPTIONS ARE EXTENDED WITH CERTS!!!"
+    if [[ -n "${IPXE_TLS_VERSION_MAX}" ]]; then
+        sed -i -E "s|^#define[[:space:]]+TLS_VERSION_MAX\b.*|#define TLS_VERSION_MAX ${IPXE_TLS_VERSION_MAX}|" \
+            "config/crypto.h"
+        echo "iPXE TLS_VERSION_MAX set to ${IPXE_TLS_VERSION_MAX}"
+    fi
     render_j2_config "${IPXE_EMBED_SCRIPT_TEMPLATE}" "${IPXE_EMBED_SCRIPT}"
     export IPXE_BUILD_OPTIONS="${IPXE_BUILD_OPTIONS} EMBED=${IPXE_EMBED_SCRIPT} CERT=${IPXE_CERT_FILE} TRUST=${IPXE_CERT_FILE}"
 fi
@@ -90,11 +99,14 @@ sed -i 's/^\/\/#define[ \t]CONSOLE_SERIAL/#define\tCONSOLE_SERIAL/g' \
     "config/console.h"
 
 # shellcheck disable=SC2086
-/usr/bin/make "bin/undionly.kpxe" "bin-${ARCH}-efi/snponly-${ARCH}.efi" ${IPXE_BUILD_OPTIONS}
+/usr/bin/make "bin/undionly.kpxe" "bin-${ARCH}-efi/snponly.efi" ${IPXE_BUILD_OPTIONS}
 
 mkdir -p "${IPXE_CUSTOM_FIRMWARE_DIR}"
 # These files will be copied by the rundnsmasq script to the shared volume.
+# iPXE builds the EFI target as snponly.efi; the ironic-image serve step expects
+# the arch-suffixed name (snponly-${ARCH}.efi), so copy it under that name.
 cp "/tmp/ipxe-source/src/bin/undionly.kpxe" \
-   "/tmp/ipxe-source/src/bin-${ARCH}-efi/snponly-${ARCH}.efi" \
-   "${IPXE_CUSTOM_FIRMWARE_DIR}"
+   "${IPXE_CUSTOM_FIRMWARE_DIR}/undionly.kpxe"
+cp "/tmp/ipxe-source/src/bin-${ARCH}-efi/snponly.efi" \
+   "${IPXE_CUSTOM_FIRMWARE_DIR}/snponly-${ARCH}.efi"
 
