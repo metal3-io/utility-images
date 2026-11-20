@@ -6,6 +6,7 @@ dhcp
 echo Start chainloading https://{{ env.IPXE_CHAIN_HOST }}:{{ env.IPXE_TLS_PORT }}/boot.ipxe
 chain https://{{ env.IPXE_CHAIN_HOST }}:{{ env.IPXE_TLS_PORT }}/boot.ipxe || goto boot_failed
 echo Chainloading succeeded!
+exit 0
 
 :boot_failed
 echo Chainloading failed!
